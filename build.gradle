@@ -35,6 +35,22 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+
+    //JTA 멀티 트랜잭션
+    implementation 'com.atomikos:transactions-spring-boot3-starter:6.0.0'
+    implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
+    implementation 'com.atomikos:transactions-jdbc:6.0.0'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+
+    //swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+    //jwt 관련 설정
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+
 }
 
 tasks.named('test') {
