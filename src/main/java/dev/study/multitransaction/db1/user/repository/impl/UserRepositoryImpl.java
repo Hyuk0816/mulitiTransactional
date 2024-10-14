@@ -2,13 +2,10 @@ package dev.study.multitransaction.db1.user.repository.impl;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import dev.study.multitransaction.db1.Log.entity.QLog;
 import dev.study.multitransaction.db1.user.model.dto.GetMyBoardDto;
 import dev.study.multitransaction.db1.user.model.dto.UserBoardInfo;
-import dev.study.multitransaction.db1.user.model.entity.QUser;
 import dev.study.multitransaction.db1.user.repository.UserRepositoryCustom;
 import dev.study.multitransaction.db2.board.model.dto.FetchMyBoard;
-import dev.study.multitransaction.db2.board.model.entity.QBoard;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -34,15 +31,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     @Override
     public List<GetMyBoardDto> getMyBoard(Long userId) {
 
-        List<UserBoardInfo> fetch = queryFactoryDb1
-                .select(Projections.fields(UserBoardInfo.class,
-                        user.email.as("email"),
-                        log.regDate.as("regDate")))
-                .from(user)
-                .leftJoin(log).on(user.userId.eq(log.user.userId))
-                .where(user.userId.eq(userId))
-                .fetch();
-
         List<FetchMyBoard> myBoards = queryFactoryDb2
                 .select(Projections.fields(FetchMyBoard.class,
                         board.boardId.as("boardId"),
@@ -52,23 +40,32 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .where(board.userId.eq(userId))
                 .fetch();
 
-        // GetMyBoardDto 리스트로 변환
+
+        List<UserBoardInfo> fetch = queryFactoryDb1
+                .select(Projections.fields(UserBoardInfo.class,
+                        user.email.as("email"),
+                        log.regDate.as("regDate")))
+                .from(user)
+                .leftJoin(log).on(user.userId.eq(log.user.userId))
+                .where(user.userId.eq(userId))
+                .fetch();
+
         List<GetMyBoardDto> result = new ArrayList<>();
 
-        if (!fetch.isEmpty() && !myBoards.isEmpty()) {
-            UserBoardInfo userInfo = fetch.get(0);
-            for (FetchMyBoard myBoard : myBoards) {
+        for (FetchMyBoard myBoard : myBoards) {
+            if (!fetch.isEmpty()) {
+                String email = fetch.get(0).getEmail();
+
                 GetMyBoardDto dto = GetMyBoardDto.builder()
-                        .email(userInfo.getEmail())
+                        .email(email)
                         .boardId(myBoard.getBoardId())
                         .title(myBoard.getTitle())
                         .content(myBoard.getContent())
-                        .regDate(userInfo.getRegDate())
+                        .regDate(fetch.get(Math.toIntExact(myBoard.getBoardId() - 1)).getRegDate()) // 적절한 regDate를 가져옵니다.
                         .build();
                 result.add(dto);
             }
         }
-
         return result;
     }
 
