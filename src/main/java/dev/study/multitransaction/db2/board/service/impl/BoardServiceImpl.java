@@ -5,6 +5,7 @@ import dev.study.multitransaction.db1.Log.repository.LogRepository;
 import dev.study.multitransaction.db1.user.constants.UserConstants;
 import dev.study.multitransaction.db1.user.model.entity.User;
 import dev.study.multitransaction.db1.user.repository.UserRepository;
+import dev.study.multitransaction.db2.board.model.dto.FetchDetailBoardDto;
 import dev.study.multitransaction.db2.board.model.entity.Board;
 import dev.study.multitransaction.db2.board.model.vo.request.BoardCreateRequestVo;
 import dev.study.multitransaction.db2.board.repository.BoardRepository;
@@ -50,5 +51,11 @@ public class BoardServiceImpl implements BoardService {
                 .build();
         //Db1
         logRepository.save(log);
+    }
+
+    @Override
+    @Transactional
+    public FetchDetailBoardDto getDetailBoard(Long boardId) {
+        return boardRepository.getThisBoard(boardId);
     }
 }
