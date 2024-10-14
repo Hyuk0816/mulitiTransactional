@@ -1,6 +1,7 @@
 package dev.study.multitransaction.db1.user.controller;
 
 import dev.study.multitransaction.db1.user.constants.UserConstants;
+import dev.study.multitransaction.db1.user.model.dto.GetMyBoardDto;
 import dev.study.multitransaction.db1.user.model.vo.request.RegisterRequestVo;
 import dev.study.multitransaction.db1.user.model.vo.response.UserStatusResponseVo;
 import dev.study.multitransaction.db1.user.service.UserService;
@@ -14,10 +15,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,5 +50,30 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new UserStatusResponseVo(UserConstants.STATUS_201, UserConstants.MESSAGE_201));
+    }
+
+    @Operation(
+            summary = "Get User Board",
+            description = "REST API to Get User Board"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status CREATED"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    }
+    )
+    @GetMapping("/my_board")
+    public ResponseEntity<List<GetMyBoardDto>> getMyBoard(){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.getMyBoard());
     }
 }
